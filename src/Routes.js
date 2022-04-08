@@ -1,15 +1,23 @@
-import Incidents from "pages/Dashboards/Incidents"
-import Workzones from "pages/Dashboards/Workzones"
-import Congestion from "pages/Dashboards/Congestion"
-import Auth from "pages/Auth"
-import NoMatch from "pages/404"
+import Home from "pages/Home";
+import ProjectCreate from "pages/Project/Create";
 
-const Routes = [
-  ...Incidents,
-  Workzones,
-  Congestion,
-  Auth,
-  NoMatch
-]
+import Auth from "pages/Auth";
+import NoMatch from "pages/404";
 
-export default Routes
+const Routes = [Home, ProjectCreate, Auth, NoMatch];
+
+export default Routes;
+
+// import Home from "pages/home"
+
+// import Auth from "pages/Auth"
+// import NoMatch from "pages/404"
+
+// const Routes = [
+
+//   Home,
+//   Auth,
+//   NoMatch
+// ]
+
+// export default Routes
