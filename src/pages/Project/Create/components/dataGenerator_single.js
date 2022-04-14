@@ -7,7 +7,7 @@ import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import controlConfigJson from "./controlConfig.json";
 import CreateNewProject from "./createNewProject";
-import VarSelector from "./varSelector.js";
+import VarSelector from "./varSelector_single";
 import { stringify } from "postcss";
 
 //let controlConfigJson = require('./control_config.json')  //if public data folder
@@ -254,19 +254,18 @@ const DataGenerator = ({ layer }) => {
       // flatten(Object.values(selectedVar.acs_vars), selectedVar.binsCompare)
     );
 
-    // let selectedACSKeys = flatten(Object.values(selectedVar.acs_vars));
+    let selectedACSKeys = flatten(Object.values(selectedVar.acs_vars));
 
-    let selectedACSKeysTest = selectedVar.map((selectedVariable) =>
-      flatten(Object.values(selectedVariable.acs_vars))
-    );
-    let selectedACSKeys = flatten(selectedACSKeysTest);
-
-    // selectedACSKeys.push(
-    //   "B01003_001E",
-    //   "B25001_001E",
-    //   "S2501_C01_001E",
-    //   "S0101_C01_001E"
+    // let selectedACSKeys = selectedVar.map((selectedVariable) =>
+    //   flatten(Object.values(selectedVariable.acs_vars))
     // );
+
+    selectedACSKeys.push(
+      "B01003_001E",
+      "B25001_001E",
+      "S2501_C01_001E",
+      "S0101_C01_001E"
+    );
 
     console.log("selectedACSKeys", selectedACSKeys);
 
@@ -312,16 +311,8 @@ const DataGenerator = ({ layer }) => {
       .then((output) => {
         let tractData = Object.values(output).map((d) => {
           let geoIds = Object.keys(d);
-          let acsVarKeysValuesArray = selectedVar.map((selectedVariable) =>
-            Object.entries(selectedVariable.acs_vars)
-          );
-          // let acsVarName = selectedVar.var;
-
-          let acsVarName = selectedVar.map((selectedVariable) => {
-            return Object.keys(selectedVariable.acs_vars).map(
-              (bin) => selectedVariable.var + bin
-            );
-          });
+          let acsVarKeysValuesArray = Object.entries(selectedVar.acs_vars);
+          let acsVarName = selectedVar.var;
           // let acsVarValuesArray = Object.values(selectedVar.acs_vars);
           // let acsVarObject = selectedVar;
 
@@ -329,9 +320,7 @@ const DataGenerator = ({ layer }) => {
             "test------",
             d,
             acsVarKeysValuesArray,
-            flatten(acsVarName),
-            flatten(acsVarKeysValuesArray)
-            // flatten(acsVarName)
+            acsVarName
             // acsVarValuesArray,
             // acsVarObject
           );
@@ -342,24 +331,20 @@ const DataGenerator = ({ layer }) => {
               let ACSOutput = Object.values(d[geoId]);
               console.log("ACSOutputValues---", ACSOutput);
 
-              let binnedVarNamesKeys = flatten(acsVarKeysValuesArray).map(
-                (d, i) => {
-                  //refine this code to find value
-                  // console.log("binnedD--", d);
+              let binnedVarNamesKeys = acsVarKeysValuesArray.map((d) => {
+                //refine this code to find value
+                let binnedVarName = acsVarName + d[0];
+                let binnedVarKeys = Object.keys(ACSOutput[0]).filter((item) =>
+                  flatten(d[1]).includes(item)
+                );
 
-                  let binnedVarName = flatten(acsVarName)[i];
-                  let binnedVarKeys = Object.keys(ACSOutput[0]).filter((item) =>
-                    flatten(d[1]).includes(item)
-                  );
+                console.log("binnedVars", binnedVarName, binnedVarKeys);
 
-                  console.log("binnedVars", binnedVarName, binnedVarKeys);
-
-                  return {
-                    binned_var_name: binnedVarName,
-                    binned_var_key: binnedVarKeys,
-                  };
-                }
-              );
+                return {
+                  binned_var_name: binnedVarName,
+                  binned_var_key: binnedVarKeys,
+                };
+              });
 
               console.log("binnedVarNamesKeys----", binnedVarNamesKeys);
 
@@ -455,20 +440,10 @@ const DataGenerator = ({ layer }) => {
             });
         });
 
-        ///BG start here--- do correct!!
-
         let BgData = Object.values(output).map((d) => {
           let geoIds = Object.keys(d);
-
-          let acsVarKeysValuesArray = selectedVar.map((selectedVariable) =>
-            Object.entries(selectedVariable.acs_vars)
-          );
-
-          let acsVarName = selectedVar.map((selectedVariable) => {
-            return Object.keys(selectedVariable.acs_vars).map(
-              (bin) => selectedVariable.var + bin
-            );
-          });
+          let acsVarKeysValuesArray = Object.entries(selectedVar.acs_vars);
+          let acsVarName = selectedVar.var;
 
           return geoIds
             .filter((geoId) => geoId.length === 12)
@@ -477,26 +452,22 @@ const DataGenerator = ({ layer }) => {
 
               console.log("ACSOutputValues---", ACSOutput);
 
-              // let binnedVarNamesKeys = acsVarKeysValuesArray.map((d) => {
-              let binnedVarNamesKeys = flatten(acsVarKeysValuesArray).map(
-                (d, i) => {
-                  // let binnedVarName = acsVarName + d[0];
-                  let binnedVarName = flatten(acsVarName)[i];
+              let binnedVarNamesKeys = acsVarKeysValuesArray.map((d) => {
+                //refine this code to find value
+                let binnedVarName = acsVarName + d[0];
+                let binnedVarKeys = Object.keys(ACSOutput[0]).filter((item) =>
+                  flatten(d[1]).includes(item)
+                );
 
-                  let binnedVarKeys = Object.keys(ACSOutput[0]).filter((item) =>
-                    flatten(d[1]).includes(item)
-                  );
+                console.log("binnedVars", binnedVarName, binnedVarKeys);
 
-                  console.log("binnedVars", binnedVarName, binnedVarKeys);
-
-                  return {
-                    binned_var_name: binnedVarName,
-                    binned_var_key: binnedVarKeys,
-                    HHBase_Tracts: ACSOutput[0]["B25001_001E"],
-                    PopBase_Tracts: ACSOutput[0]["B01003_001E"],
-                  };
-                }
-              );
+                return {
+                  binned_var_name: binnedVarName,
+                  binned_var_key: binnedVarKeys,
+                  HHBase_Tracts: ACSOutput[0]["B25001_001E"],
+                  PopBase_Tracts: ACSOutput[0]["B01003_001E"],
+                };
+              });
 
               console.log("binnedVarNamesKeys----", binnedVarNamesKeys);
 
@@ -576,6 +547,102 @@ const DataGenerator = ({ layer }) => {
   };
 
   return (
+    // <div>
+    //   {/* <CreateNewProject /> */}
+
+    //   {/* <div className="bg-white shadow overflow-hidden sm:rounded-lg">
+    //     <div className="px-4 py-5 sm:px-6">
+    //       <h3 className="text-lg leading-6 font-medium text-gray-900">
+    //         Create new project
+    //       </h3> */}
+    //   {/* <p className="mt-1 max-w-2xl text-sm text-gray-500">
+    //         Click on PUMAS to define project area
+    //       </p> */}
+    //   {/* </div>
+    //   </div> */}
+    //   <div className="w-47 bg-gray-600 text-white">
+    //     {/* <div className="w-46 bg-gray-600 text-white"> */}
+    //     <table
+    //       style={{ marginTop: `3px`, marginLeft: "auto", marginRight: "auto" }}
+    //     >
+    //       <thead>
+    //         <tr style={{ borderBottom: `1px solid` }}>
+    //           <th> </th>
+
+    //           <th className="max-w-sm px-0 py-2 text-left  text-sm font-medium text-gray-300">
+    //             Create New project
+    //           </th>
+    //         </tr>
+    //       </thead>
+
+    //       <tbody>
+    //         <tr>
+    //           <td className="max-w-sm px-6 py-2 text-left  text-sm font-medium text-gray-300">
+    //             PUMA selected:
+    //           </td>
+
+    //           <td className="max-w-sm px-6 py-2 text-right  text-sm font-medium text-gray-300">
+    //             {layer.state.selectedPumas
+    //               ? layer.state.selectedPumas.length
+    //               : 0}
+    //           </td>
+    //         </tr>
+    //         <tr>
+    //           <td className="max-w-sm px-6 py-2 text-left  text-sm font-medium text-gray-300">
+    //             Number of BGs:
+    //           </td>
+    //           <td className="max-w-sm px-6 py-2 text-right  text-sm font-medium text-gray-300">
+    //             {layer.state.selectedBlockGroups
+    //               ? layer.state.selectedBlockGroups.length
+    //               : 0}
+    //           </td>
+    //         </tr>
+    //         <tr></tr>
+    //         <tr className="max-w-sm px-6 py-2 text-right mt-20 mb-20 text-sm font-medium text-gray-300">
+    //           Click on PUMAS to define project area
+    //         </tr>
+    //       </tbody>
+    //     </table>
+
+    //     {/* <div className="max-w-sm px-6 py-2 text-left  text-sm font-medium text-gray-300">
+    //     Click on PUMAS to define project area
+    //   </div>
+
+    //   <div className="max-w-sm px-6 py-2 text-left  text-sm font-medium text-gray-300">
+    //     PUMA selected:{" "}
+    //     {layer.state.selectedPumas ? layer.state.selectedPumas.length : 0}
+    //   </div>
+    //   <div className="max-w-sm px-6 py-2 text-left  text-sm font-medium text-gray-300">
+    //     Number of BGs:{" "}
+    //     {layer.state.selectedBlockGroups
+    //       ? layer.state.selectedBlockGroups.length
+    //       : 0}
+    //   </div> */}
+
+    //     <VarSelector />
+
+    //     <h4>{process}</h4>
+    //     {/* <button
+    //       onClick={startProcess}
+    //       className={
+    //         "hover:bg-gray-700 bg-gray-400 text-white cursor-pointer p-2"
+    //       }>
+    //          Generate Data
+    //     </button> */}
+
+    //     {/* <div className="border border-red-400 w-full flex justify-end"> */}
+    //     <div className="w-full flex justify-end ">
+    //       <button
+    //         type="button"
+    //         onClick={startProcess}
+    //         className="mt-10 mb-5 ml-auto mr-auto px-5 py-2 border border-transparent text-base font-medium rounded-full shadow-sm text-white hover:bg-gray-700 bg-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+    //       >
+    //         Generate Data
+    //       </button>
+    //     </div>
+    //   </div>
+    // </div>
+
     //Test Slide over
     <Transition.Root show={open} as={Fragment}>
       {/* <Dialog
@@ -659,7 +726,7 @@ const DataGenerator = ({ layer }) => {
                         </tbody>
                       </table>
                       <h3 className="text-sm font-medium text-gray-900 mt-2 ml-6 ">
-                        2. Select a variable or mutiple variables
+                        2. Select a variable
                       </h3>{" "}
                       <div className="flex justify-end">
                         <VarSelector setSelectedVar={setSelectedVar} />

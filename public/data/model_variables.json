@@ -1,4 +1,60 @@
 {
+   "HHBASE":{
+      "name":"Total Housing Units(BG)",
+      "comment": "qa check passed",
+      "synpop_type":"households",
+      "var": "HHBASE",
+      "acs_type":"BG",
+      "acs_vars":{
+        "":["B25001_001E"]
+      },
+     "binsCompare":[
+        {"name":"", "comp": "return v"}
+     ]
+   },
+
+   "POPBASE":{
+      "name":"Total Population(BG)",
+      "comment": "qa check passed",
+      "synpop_type":"households",
+      "var": "POPBASE",
+      "acs_type":"BG",
+      "acs_vars":{
+        "":["B01003_001E"]
+      },
+     "binsCompare":[
+        {"name":"", "comp": "return v"}
+     ]
+   },
+   "HHBASE_Tract":{
+      "name":"Total Housing Units(Tracts)",
+      "comment": "qa check passed",
+      "synpop_type":"households",
+      "var": "HHBASE",
+      "acs_type":"Tract",
+      "acs_vars":{
+        "":["S2501_C01_001E"]
+      },
+     "binsCompare":[
+        {"name":"", "comp": "return v"}
+     ]
+   },
+
+
+   "POPBASE_Tract":{
+      "name":"Total Population(Tracts)",
+      "comment": "qa check passed",
+      "synpop_type":"households",
+      "var": "POPBASE",
+      "acs_type":"Tract",
+      "acs_vars":{
+        "":["S0101_C01_001E"]
+      },
+     "binsCompare":[
+        {"name":"", "comp": "return v"}
+     ]
+   },
+
     "HINCP":{
        "name":"Household Income",
        "comment": "qa check passed",
