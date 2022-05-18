@@ -3,7 +3,7 @@ export const PROJECT_NAME = "avail_modeler";
 export const MAPBOX_TOKEN =
   "pk.eyJ1IjoiYW0zMDgxIiwiYSI6IkxzS0FpU0UifQ.rYv6mHCcNd7KKMs7yhY3rw";
 
-let API_HOST = "https://graph.availabs.org/";
+let API_HOST = "https://graph.availabs.org";
 let AUTH_HOST = "https://availauth.availabs.org";
 let CLIENT_HOST = "https://ppdaf.org";
 

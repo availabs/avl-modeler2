@@ -7,3 +7,9 @@
 [submodule "src/modules/avl-map"]
 	path = src/modules/avl-map
 	url = https://github.com/availabs/avl-map.git
+[submodule "server/lib/activitysim"]
+	path = server/lib/activitysim
+	url = https://github.com/ActivitySim/activitysim.git
+[submodule "server/lib/populationsim"]
+	path = server/lib/populationsim
+	url = https://github.com/ActivitySim/populationsim.git

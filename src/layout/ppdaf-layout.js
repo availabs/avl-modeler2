@@ -30,7 +30,6 @@ const Layout = ({ children, menus, sideNav }) => {
     size: sideNav.size || "compact",
     color: sideNav.color || "dark",
   };
-  console.log("layout", menus);
   return (
     <div className="flex">
       <div className="hidden md:block">

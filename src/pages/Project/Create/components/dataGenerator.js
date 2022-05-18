@@ -6,54 +6,20 @@ import { useFalcor } from "modules/avl-components/src";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import controlConfigJson from "./controlConfig.json";
-import CreateNewProject from "./createNewProject";
-import VarSelector from "./varSelector.js";
+import CreateNewProject from "./createProject_old";
+// import VarSelector from "./varSelector";
+import VarSelector from "./varSelector_1.js";
+import CreateProject from "./createProject";
+
 import { stringify } from "postcss";
 
 //let controlConfigJson = require('./control_config.json')  //if public data folder
 const host = "http://localhost:5000/";
-const team = [
-  {
-    name: "Tom Cook",
-    email: "tom.cook@example.com",
-    href: "#",
-    imageUrl:
-      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-  },
-  {
-    name: "Whitney Francis",
-    email: "whitney.francis@example.com",
-    href: "#",
-    imageUrl:
-      "https://images.unsplash.com/photo-1517365830460-955ce3ccd263?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-  },
-  {
-    name: "Leonard Krasner",
-    email: "leonard.krasner@example.com",
-    href: "#",
-    imageUrl:
-      "https://images.unsplash.com/photo-1519345182560-3f2917c472ef?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-  },
-  {
-    name: "Floyd Miles",
-    email: "floy.dmiles@example.com",
-    href: "#",
-    imageUrl:
-      "https://images.unsplash.com/photo-1463453091185-61582044d556?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-  },
-  {
-    name: "Emily Selman",
-    email: "emily.selman@example.com",
-    href: "#",
-    imageUrl:
-      "https://images.unsplash.com/photo-1502685104226-ee32379fefbe?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-  },
-];
 
 const DataGenerator = ({ layer }) => {
   console.log("layer----", layer);
   const { falcor, falcoCache } = useFalcor();
-  const [process, setProcess] = useState(""); // hook!!
+  const [process, setProcess] = useState(false);
   //const [seedData, setSeedData] = useState({});
   const [open, setOpen] = useState(true);
 
@@ -68,7 +34,7 @@ const DataGenerator = ({ layer }) => {
   // Object.values(variables[e.target.value].acs_vars)
 
   const startProcess = async () => {
-    setProcess("working");
+    setProcess(true);
 
     console.time("generate crosswalk");
     let crosswalkData = generateCrosswalk();
@@ -85,19 +51,28 @@ const DataGenerator = ({ layer }) => {
     console.time("generate controlControl");
     // let controlConfig = generateControlConfig(controlData);
     //expression is hard to generate so decide to manually creat object json and import
-    let controlConfig = controlConfigJson;
+
+    // let controlConfig = controlConfigJson;
+
+    let controlConfig = flatten(generateControlConfig());
+    controlConfig.splice(1, 3);
     console.timeEnd("generate controlControl");
 
-    console.log(
-      "getting data----",
-      crosswalkData,
-      seedData,
-      controlData,
-      controlConfig
-    );
+    const finalData = {
+      crosswork_data: crosswalkData,
+      seed_data: seedData,
+      control_data: controlData,
+      control_config: controlConfig,
+    };
+    console.log("finalData---", finalData);
+    // requestCreate(finalData);
+
+    setProcess(false);
+    // return finalData;
 
     //save each Data(inputs data) as zip file
     //how to --https://github.com/Stuk/jszip
+
     var zip = new JSZip();
     zip.file("geo_cross_walk.csv", Papa.unparse(crosswalkData)); //use Papa.unparse to put json back to csv
     zip.file("seed_households.csv", Papa.unparse(seedData.household));
@@ -111,8 +86,6 @@ const DataGenerator = ({ layer }) => {
 
     let zipFile = await zip.generateAsync({ type: "blob" });
     saveAs(zipFile, "pop_synth_input_new.zip");
-
-    setProcess("finished");
   };
 
   const generateCrosswalk = () => {
@@ -151,7 +124,7 @@ const DataGenerator = ({ layer }) => {
 
     let selectedPumas = layer.state.selectedPumas;
 
-    // console.log('selectedPumas---', selectedPumas)
+    console.log("selectedPumas---", selectedPumas);
 
     const household = selectedPumas.map((pumaId) => {
       let puma_id = pumaId.slice(2, 7);
@@ -344,7 +317,7 @@ const DataGenerator = ({ layer }) => {
 
               let binnedVarNamesKeys = flatten(acsVarKeysValuesArray).map(
                 (d, i) => {
-                  //refine this code to find value
+                  //refine this code to findStatus:finished value
                   // console.log("binnedD--", d);
 
                   let binnedVarName = flatten(acsVarName)[i];
@@ -412,7 +385,7 @@ const DataGenerator = ({ layer }) => {
 
               let binnedVarNamesValuesNewFinal = Object.assign(
                 {},
-                ...binnedVarNamesValuesNew
+                ...binnedVarNamesValuesNew.slice(4)
               );
 
               // let binnedVarNamesValuesNew1 = JSON.stringify(
@@ -475,7 +448,7 @@ const DataGenerator = ({ layer }) => {
             .map((geoId, i) => {
               let ACSOutput = Object.values(d[geoId]);
 
-              console.log("ACSOutputValues---", ACSOutput);
+              console.log("ACSOutputValuesBGs---", ACSOutput);
 
               // let binnedVarNamesKeys = acsVarKeysValuesArray.map((d) => {
               let binnedVarNamesKeys = flatten(acsVarKeysValuesArray).map(
@@ -492,8 +465,6 @@ const DataGenerator = ({ layer }) => {
                   return {
                     binned_var_name: binnedVarName,
                     binned_var_key: binnedVarKeys,
-                    HHBase_Tracts: ACSOutput[0]["B25001_001E"],
-                    PopBase_Tracts: ACSOutput[0]["B01003_001E"],
                   };
                 }
               );
@@ -516,7 +487,7 @@ const DataGenerator = ({ layer }) => {
                   }, {});
 
                 console.log(
-                  "binnedACSKey",
+                  "binnedACSKeyBgs",
                   d,
                   binnedACSName,
                   binnedACSKeys,
@@ -543,14 +514,15 @@ const DataGenerator = ({ layer }) => {
                 return obj;
               });
 
-              console.log(
-                "BgsBinnedVarNamesValuesNew--",
-                binnedVarNamesValuesNew
-              );
-
               let binnedVarNamesValuesNewFinal = Object.assign(
                 {},
-                ...binnedVarNamesValuesNew
+                ...binnedVarNamesValuesNew.slice(4)
+              );
+
+              console.log(
+                "BgsBinnedVarNamesValuesNewBgs--",
+                binnedVarNamesValuesNew,
+                binnedVarNamesValuesNewFinal
               );
 
               return {
@@ -573,6 +545,39 @@ const DataGenerator = ({ layer }) => {
         console.log("Control_data--", BgData, tractData);
         return { control_tracts: tractData[0], control_bgs: BgData[0] };
       });
+  };
+
+  const generateControlConfig = () => {
+    let objectItem = selectedVar.map((variable) => {
+      return Object.keys(variable.acs_vars).map((bin, i) => {
+        let target = variable.var + bin;
+
+        console.log("expression", variable.expression);
+        return {
+          target: variable.target ? variable.target : target,
+          geography: variable.acs_type,
+          seed_table: variable.synpop_type,
+          importance: variable.importance,
+          control_field: target,
+          expression: variable.expression[i],
+        };
+      });
+    });
+
+    return objectItem;
+  };
+
+  const requestCreate = (data) => {
+    const options = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    };
+    fetch(`http://localhost:5000/project/create_1`, options)
+      .then((r) => r.json())
+      .then((d) => console.log("create project response", d));
   };
 
   return (
@@ -659,284 +664,71 @@ const DataGenerator = ({ layer }) => {
                         </tbody>
                       </table>
                       <h3 className="text-sm font-medium text-gray-900 mt-2 ml-6 ">
-                        2. Select a variable or mutiple variables
-                      </h3>{" "}
-                      <div className="flex justify-end">
+                        2. Select a variable (or multiple)
+                      </h3>
+                      <div className="flex justify-end mr-6">
                         <VarSelector setSelectedVar={setSelectedVar} />
-                        {/* <h3 className="text-sm font-medium text-gray-900 mt-2 ml-6 ">
-                          Selected Variables: {selected}
-                        </h3>{" "} */}
-                        {/* <Menu
-                          as="div"
-                          className="relative inline-block text-left mr-5 "
-                        >
-                          <Menu.Button
-                            className="inline-flex justify- w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500 "
-                        
-                          >
-                            Choose a variable
-                          
-                          </Menu.Button>
-
-                          <Transition
-                            as={Fragment}
-                            enter="transition ease-out duration-100"
-                            enterFrom="transform opacity-0 scale-95"
-                            enterTo="transform opacity-100 scale-100"
-                            leave="transition ease-in duration-75"
-                            leaveFrom="transform opacity-100 scale-100"
-                            leaveTo="transform opacity-0 scale-95"
-                          >
-                            <Menu.Items className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
-                              <div className="py-1">
-                                {Object.keys(variables).map((k, i) => {
-                                  return (
-                                    <Menu.Item
-                                   
-                                    >
-                                      {({ active }) => (
-                                        <a
-                                          href="#"
-                                          className={classNames(
-                                            active
-                                              ? "bg-gray-100 text-gray-900"
-                                              : "text-gray-700",
-                                            "block px-4 py-2 text-sm"
-                                          )}
-                                        >
-                                          {variables[k].name}
-                                        </a>
-                                      )}
-                                    </Menu.Item>
-                                  );
-                                })}
-                              </div>
-                            </Menu.Items>
-                          </Transition>
-                        </Menu> */}
+                        {/* <VarTest1 setSelectedVar={setSelectedVar} /> */}
                       </div>
                     </div>
                   </div>
 
-                  <div className="flex flex-1 flex-col justify-between">
-                    <div className="divide-y divide-gray-200 px-4 sm:px-6">
-                      <div className="space-y-6 pt-6 pb-5">
-                        <div>
-                          <label
-                            htmlFor="project-name"
-                            className="block text-sm font-medium text-gray-900"
-                          >
-                            {" "}
-                            3. Project name{" "}
-                          </label>
-                          <div className="mt-1">
-                            <input
-                              type="text"
-                              name="project-name"
-                              id="project-name"
-                              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                            />
-                          </div>
-                        </div>
-                        <div>
-                          <label
-                            htmlFor="description"
-                            className="block text-sm font-medium text-gray-900 ml-3"
-                          >
-                            {" "}
-                            Description{" "}
-                          </label>
-                          <div className="mt-1">
-                            <textarea
-                              id="description"
-                              name="description"
-                              rows={4}
-                              className="block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                              defaultValue={""}
-                            />
-                          </div>
-                        </div>
-                        <div>
-                          <h3 className="text-sm font-medium text-gray-900">
-                            Team Members
-                          </h3>
-                          <div className="mt-2">
-                            <div className="flex space-x-2">
-                              {team.map((person) => (
-                                <a
-                                  key={person.email}
-                                  href={person.href}
-                                  className="rounded-full hover:opacity-75"
-                                >
-                                  <img
-                                    className="inline-block h-8 w-8 rounded-full"
-                                    src={person.imageUrl}
-                                    alt={person.name}
-                                  />
-                                </a>
-                              ))}
-                              <button
-                                type="button"
-                                className=" inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border-2 border-dashed border-gray-200 bg-white text-gray-400 hover:border-gray-300 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                              >
-                                <span className="sr-only">Add team member</span>
-                                {/* <PlusSmIcon
-                                 className="h-5 w-5"
-                                 aria-hidden="true"
-                               /> */}
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                        {/* <fieldset>
-                          <legend className="text-sm font-medium text-gray-900">
-                            Privacy
-                          </legend>
-                          <div className="mt-2 space-y-5">
-                            <div className="relative flex items-start">
-                              <div className="absolute flex h-5 items-center">
-                                <input
-                                  id="privacy-public"
-                                  name="privacy"
-                                  aria-describedby="privacy-public-description"
-                                  type="radio"
-                                  className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                                  defaultChecked
-                                />
-                              </div>
-                              <div className="pl-7 text-sm">
-                                <label
-                                  htmlFor="privacy-public"
-                                  className="font-medium text-gray-900"
-                                >
-                                  {" "}
-                                  Public access{" "}
-                                </label>
-                                <p
-                                  id="privacy-public-description"
-                                  className="text-gray-500"
-                                >
-                                  Everyone with the link will see this project.
-                                </p>
-                              </div>
-                            </div>
-                            <div>
-                              <div className="relative flex items-start">
-                                <div className="absolute flex h-5 items-center">
-                                  <input
-                                    id="privacy-private-to-project"
-                                    name="privacy"
-                                    aria-describedby="privacy-private-to-project-description"
-                                    type="radio"
-                                    className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                                  />
-                                </div>
-                                <div className="pl-7 text-sm">
-                                  <label
-                                    htmlFor="privacy-private-to-project"
-                                    className="font-medium text-gray-900"
-                                  >
-                                    {" "}
-                                    Private to project members{" "}
-                                  </label>
-                                  <p
-                                    id="privacy-private-to-project-description"
-                                    className="text-gray-500"
-                                  >
-                                    Only members of this project would be able
-                                    to access.
-                                  </p>
-                                </div>
-                              </div>
-                            </div>
-                            <div>
-                              <div className="relative flex items-start">
-                                <div className="absolute flex h-5 items-center">
-                                  <input
-                                    id="privacy-private"
-                                    name="privacy"
-                                    aria-describedby="privacy-private-to-project-description"
-                                    type="radio"
-                                    className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                                  />
-                                </div>
-                                <div className="pl-7 text-sm">
-                                  <label
-                                    htmlFor="privacy-private"
-                                    className="font-medium text-gray-900"
-                                  >
-                                    {" "}
-                                    Private to you{" "}
-                                  </label>
-                                  <p
-                                    id="privacy-private-description"
-                                    className="text-gray-500"
-                                  >
-                                    You are the only one able to access this
-                                    project.
-                                  </p>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </fieldset> */}
-                      </div>
-                      <div className="pt-4 pb-6">
-                        <div className="flex text-sm">
-                          <a
-                            href="#"
-                            className="group inline-flex items-center font-medium text-indigo-600 hover:text-indigo-900"
-                          >
-                            {/* <LinkIcon
-                             className="h-5 w-5 text-indigo-500 group-hover:text-indigo-900"
-                             aria-hidden="true"
-                           /> */}
-                            <span className="ml-2"> Copy link </span>
-                          </a>
-                        </div>
-                        <div className="mt-4 flex text-sm">
-                          <a
-                            href="#"
-                            className="group inline-flex items-center text-gray-500 hover:text-gray-900"
-                          >
-                            {/* <QuestionMarkCircleIcon
-                             className="h-5 w-5 text-gray-400 group-hover:text-gray-500"
-                             aria-hidden="true"
-                           /> */}
-                            <span className="ml-2">
-                              {" "}
-                              Learn more about sharing{" "}
-                            </span>
-                          </a>
-                        </div>
+                  {/* <CreateProject open={open} setOpen={setOpen} data={data} /> */}
+                  <div className=" py-6 px-4 sm:px-6 mt-5">
+                    <div className="flex items-center">
+                      <h3 className="text-sm font-medium text-gray-900 mt-2 ">
+                        3. Name your project:
+                      </h3>
+
+                      {/* <label
+          htmlFor="project-name"
+          className="block text-sm font-medium text-gray-900"
+        >
+          {" "}
+          3. Project name{" "}
+        </label> */}
+
+                      <div className="mt-1 ml-3">
+                        <input
+                          name="project-name"
+                          id="project-name"
+                          className="rounded-md border border-gray-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-md"
+                          placeholder="Your Project Name"
+                          onChange={() => {}}
+                        />
                       </div>
                     </div>
+
+                    <div className="flex flex-shrink-0 justify-center px-4 py-4 mt-2">
+                      {/* <button
+                        type="button"
+                        className="rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                        onClick={() => setOpen(false)}
+                      >
+                        Cancel
+                      </button> */}
+                      <button
+                        type="button"
+                        disabled={layer.state.selectedPumas.length === 0}
+                        className="ml-4 rounded-md border border-transparent bg-gray-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed "
+                        onClick={() => {
+                          // setOpen(true);
+
+                          startProcess().then((data) => {
+                            console.log("do I get here", data);
+                            // if () {
+                            // setProcess(true);
+                            // requestCreate(data);
+                            // }
+                          });
+                          // window.location.reload();
+                        }}
+                      >
+                        Create Project
+                        {process ? "  (Loading...)" : ""}
+                      </button>
+                    </div>
                   </div>
-                </div>
-                <div className="flex flex-shrink-0 justify-end px-4 py-4">
-                  <button
-                    type="button"
-                    className="rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                    onClick={() => setOpen(false)}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="ml-4 inline-flex justify-center rounded-md border border-transparent bg-gray-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                  >
-                    Create
-                  </button>
-                </div>
-                <h1>{setProcess}</h1>
-                <div className="w-full flex justify-end ">
-                  <button
-                    type="button"
-                    onClick={startProcess}
-                    className="mt-10 mb-5 ml-auto mr-auto px-5 py-2 border border-transparent text-base font-medium rounded-full shadow-sm text-white hover:bg-gray-700 bg-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                  >
-                    Generate Data
-                  </button>
                 </div>
               </form>
             </div>

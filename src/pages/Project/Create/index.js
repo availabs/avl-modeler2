@@ -5,6 +5,7 @@ import ProjectCreateLayerFactory from "./components/projectCreate.layer";
 import { MAPBOX_TOKEN } from "config";
 
 const ProjectCreate = ({ user }) => {
+  console.log("user_ProjectCreate", user);
   return (
     <div className="h-screen w-screen overflow-hidden">
       <div className="pl-14 h-screen  h-full">

@@ -8,9 +8,13 @@
       "acs_vars":{
         "":["B25001_001E"]
       },
-     "binsCompare":[
+      "binsCompare":[
         {"name":"", "comp": "return v"}
-     ]
+     ],
+      "target":"num_hh",
+      "required":true,
+      "importance": 100000,
+      "expression": ["(households.WGTP > 0) & (households.WGTP < np.inf)"]
    },
 
    "POPBASE":{
@@ -24,7 +28,10 @@
       },
      "binsCompare":[
         {"name":"", "comp": "return v"}
-     ]
+     ],
+     "required":true,
+     "importance": 100000,
+     "expression": ["(households.WGTP > 0) & (households.WGTP < np.inf)"]
    },
    "HHBASE_Tract":{
       "name":"Total Housing Units(Tracts)",
@@ -37,7 +44,10 @@
       },
      "binsCompare":[
         {"name":"", "comp": "return v"}
-     ]
+     ],
+     "required":false,
+     "importance": 100000,
+     "expression": ["(households.WGTP > 0) & (households.WGTP < np.inf)"]
    },
 
 
@@ -52,7 +62,10 @@
       },
      "binsCompare":[
         {"name":"", "comp": "return v"}
-     ]
+     ],
+     "required":false,
+     "importance": 100000,
+     "expression": ["(households.WGTP > 0) & (households.WGTP < np.inf)"]
    },
 
     "HINCP":{
@@ -80,6 +93,16 @@
          {"name":"< 75,000", "comp": "return v >= 60000 && v < 75000"},
          {"name":"< 125,000", "comp": "return v >= 75000 && v < 125000"},
          {"name":"> 125,000", "comp": "return v >= 125000"}
+      ],
+      "importance": 5000,
+      "expression": ["(households.HINCP > -999999999) & (households.HINCP <= 15000)",
+      "(households.HINCP >15000) & (households.HINCP <= 25000)",
+      "(households.HINCP > 25000) & (households.HINCP <= 35000)",
+     " (households.HINCP > 35000) & (households.HINCP <= 45000)",
+      "(households.HINCP > 45000) & (households.HINCP <= 60000)",
+      "(households.HINCP > 60000) & (households.HINCP <= 75000)",
+      "(households.HINCP > 75000) & (households.HINCP <= 125000)",
+      "(households.HINCP > 125000) & (households.HINCP <= 999999999)"
       ]
     },
 
@@ -100,8 +123,43 @@
           {"name":"1 vehicle", "comp": "return v === 1" },
           {"name":"2 vehicles", "comp": "return v === 2"  },
           {"name":"3+ vehicles", "comp": "return v >= 3"  }
+         ],
+         "importance": 1000,
+         "expression": ["households.VEH == 0 ",
+         "households.VEH == 1",
+         "households.VEH == 2",
+         "(households.VEH == 3) & (households.VEH <= 999999999)"
          ]
+       
     },
+
+    "WIF":{
+      "name":"Workers in Family",
+      "synpop_type":"households",
+      "comment": "qa check semi passed-synpop n/a b not included",
+      "var": "WIF",
+      "acs_type":"Tract",
+      "acs_vars":{ 
+      "0" : ["B08202_002E"],
+      "1": ["B08202_003E"],
+      "2" : ["B08202_004E"],
+      "3+" : ["B08202_005E"]
+         },
+   
+   
+      "binsCompare":[
+         {"name":"No workers", "comp":"return v === 0" },
+         {"name":"1 workers", "comp":"return v === 1" },
+         {"name":"2 workers", "comp":"return v === 2" },
+         {"name":"3+ workers", "comp":"return v === 3" }
+      ],
+      "importance": 1000,
+      "expression": ["households.WIF == 0 ",
+      "households.WIF == 1",
+      "households.WIF == 2",
+      "(households.WIF == 3) & (households.WIF <= 999999999)"
+      ]
+   },
 
     "YBL":{
       "name":"Year Structure Built",
@@ -122,16 +180,7 @@
          "2014+":["B25034_002E"]
          },
    
-      "binsOld":[
-         1,
-         2,
-         3,
-         4,
-         5,
-         6,
-         7,
-         13
-      ],
+    
       "bins":
       [
          {"name":"<= 1939", "value":1 },   
@@ -157,6 +206,18 @@
          {"name":"<= 2009", "comp":"return v > 7 && v <= 13" },   
          {"name":"<= 2013", "comp":"return v > 13 && v <= 17" },    
          {"name":"<= 2019", "comp":"return v > 17"}    
+      ],
+      "importance": 1000,
+      "expression": ["households.YBL == 1 ",
+      "households.YBL == 2",
+      "households.YBL == 3",
+      "households.YBL == 4 ",
+      "households.YBL == 5",
+      "households.YBL == 6",
+      "households.YBL == 7",
+      "(households.YBL > 7 ) & (households.YBL <= 13)",
+      "(households.YBL > 13) & (households.YBL <= 17)",
+      "households.YBL > 17"
       ]
    
    },
@@ -193,6 +254,14 @@
         {"name":"> 1500", "comp":"return v > 1500" } 
          
 
+     ],
+     "importance": 1000,
+     "expression": ["households.RNTP  <= 300 ",
+     "(households.RNTP > 300 ) & (households.RNTP <= 500)",
+     "(households.RNTP > 500) & (households.RNTP <= 700",
+     "(households.RNTP > 700 ) & (households.RNTP <= 900)",
+     "(households.RNTP > 900) & (households.RNTP <= 1500)",
+     "households.RNTP > 1500"
      ]
   
   },
@@ -223,35 +292,22 @@
          {"name":"3 person",  "comp": "return v === 3" },
          {"name":"4+ person", "comp": "return v >= 4" }
 
+      ],
+      "importance": 1000,
+      "expression": ["households.NP == 0 ",
+      "households.NP == 1 ",
+      "households.NP == 2",
+      "households.NP == 3",
+      "households.NP == 4 "
       ]
    },
 
-   "WIF":{
-      "name":"Workers in Family",
-      "synpop_type":"households",
-      "comment": "qa check semi passed-synpop n/a b not included",
-      "var": "WIF",
-      "acs_type":"Tract",
-      "acs_vars":{ 
-      "0" : ["B08202_002E"],
-      "1": ["B08202_003E"],
-      "2" : ["B08202_004E"],
-      "3+" : ["B08202_005E"]
-         },
-   
-   
-      "binsCompare":[
-         {"name":"No workers", "comp":"return v === 0" },
-         {"name":"1 workers", "comp":"return v === 1" },
-         {"name":"2 workers", "comp":"return v === 2" },
-         {"name":"3+ workers", "comp":"return v === 3" }
-      ]
-   },
+
 
    "GASP":{
       "name":"Monthly GAS Cost in Household",
       "synpop_type":"households",
-      "comment": "qa check not passed - no hh gas cost by count",
+      "comment": "qa check not passed - no hh gas cost by count but total hh gas cost value only",
       "var": "GASP",
       "acs_type":"",
       "acs_vars":{ 
@@ -290,6 +346,14 @@
          {"name":"> 500", "comp":"return v > 500" } 
             
 
+      ],
+      "importance": 1000,
+      "expression": ["households.GASP  <= 50 ",
+         "(households.GASP > 50 ) & (households.GASP <= 100)",
+         "(households.GASP > 100) & (households.GASP <= 200",
+         "(households.GASP > 200 ) & (households.GASP <= 300)",
+         "(households.GASP > 300) & (households.GASP <= 500)",
+      "households.GASP > 500"
       ]
    },
 
@@ -319,6 +383,10 @@
          {"name":"Female", "comp":"return v === 2" }
             
 
+      ],
+      "importance": 1000,
+      "expression": [ "households.SEX == 1 ",
+      "households.SEX == 2"
       ]
    },
 
@@ -347,6 +415,15 @@
          {"name":"<= 59 min  ", "comp":"return v > 39 && v <= 59" },
          {"name":"<= 89 min  ", "comp":"return v > 59 && v <= 89" }, 
          {"name":"90+ min  ", "comp":"return v > 89" }
+      ],
+      "importance": 1000,
+      "expression": ["persons.JWMNP  <= 9 ",
+      "(persons.JWMNP > 9 ) & (persons.JWMNP <= 19)",
+      "(persons.JWMNP > 19) & (persons.JWMNP <= 29",
+      "(persons.JWMNP > 29 ) & (persons.JWMNP <= 39)",
+      "(persons.JWMNP > 39) & (persons.JWMNP <= 59)",
+      "(persons.JWMNP > 59) & (persons.JWMNP <= 89)",
+      "persons.JWMNP > 89"
       ]
    },
 
@@ -389,6 +466,17 @@
          {"name":"<= 69 years", "comp":"return v > 59 && v <= 69 "},   
          {"name":"<= 79 years", "comp":"return v > 69 && v <= 79" },
          {"name":"80+ years", "comp":"return v > 79" }
+      ],
+      "importance": 1000,
+      "expression": ["persons.AGEP  <= 9 ",
+      "(persons.AGEP > 9 ) & (persons.AGEP <= 19)",
+      "(persons.AGEP > 19) & (persons.AGEP <= 29",
+      "(persons.AGEP > 29 ) & (persons.AGEP <= 39)",
+      "(persons.AGEP > 39) & (persons.AGEP <= 49)",
+      "(persons.AGEP > 49) & (persons.AGEP <= 59)",
+      "(persons.AGEP > 59) & (persons.AGEP <= 69)",
+      "(persons.AGEP > 69) & (persons.AGEP <= 79)",
+      "persons.AGEP > 79"
       ]
    },
 
@@ -414,6 +502,11 @@
          {"name":" N/A ( not a worker or public transportaion", "comp":"return v === 0" },   
          {"name":" Drive alone", "comp":"return v === 1" },
          {"name":" Allocated(Car-pool)", "comp":"return v > 1 && v <=10" }
+      ],
+      "importance": 1000,
+      "expression": ["persons.JWRIP == 0 ",
+      "persons.JWRIP == 1 ",
+      "(persons.JWRIP > 2) & (persons.JWRIP <= 10)"
       ]
    },
 
@@ -462,6 +555,20 @@
          {"name":"Unpaid family workers", "comp":"return v === 8" },
          {"name":"N/A (not in universe)", "comp":"return v === 0" }
       
+      ],
+      "importance": 1000,
+      "expression": [
+      "persons.COW == 1 ",
+      "persons.COW == 2 ",
+      "persons.COW == 3 ",
+      "persons.COW == 4 ",
+      "persons.COW == 5 ",
+      "persons.COW == 6 ",
+      "persons.COW == 7 ",
+      "persons.COW == 8 ",
+      "persons.COW == 1 ",
+      "persons.COW == 0 "
+      
       ]
    }, 
    
@@ -495,6 +602,16 @@
        {"name":"< 125,000", "comp":"return v > 74999 && v <=  124999"},
        {"name":"> 125,000", "comp":"return v > 124999"}
  
+    ],
+    "importance": 1000,
+    "expression": ["(persons.PINCP >= 1 ) & (persons.PINCP <= 14999)",
+    "(persons.PINCP > 14999 ) & (persons.PINCP <= 24999)",
+    "(persons.PINCP > 24999) & (persons.PINCP <= 34999",
+    "(persons.PINCP > 34999 ) & (persons.PINCP <= 44999)",
+    "(persons.PINCP > 44999) & (persons.PINCP <= 5999)",
+    "(persons.PINCP > 5999) & (persons.PINCP <= 74999)",
+    "(persons.PINCP > 74999) & (persons.PINCP <= 124999)",
+    "persons.PINCP > 124999"
     ]
       
       
@@ -535,6 +652,22 @@
          {"name":"Worked from home", "comp":"return v === 11"},
          {"name":"N/A (not in universe)", "comp":"return v === 0" }
       
+      ],
+      "importance": 1000,
+      "expression": [
+      "persons.JWTRNS == 1 ",
+      "persons.JWTRNS == 2 ",
+      "persons.JWTRNS == 3 ",
+      "persons.JWTRNS == 4 ",
+      "persons.JWTRNS == 5 ",
+      "persons.JWTRNS == 6 ",
+      "persons.JWTRNS == 7 ",
+      "persons.JWTRNS == 8 ",
+      "persons.JWTRNS == 9 ",
+      "persons.JWTRNS == 10 ",
+      "persons.JWTRNS == 11 ",
+      "persons.JWTRNS == 0 "
+      
       ]
    },
    "CIT":{
@@ -558,6 +691,14 @@
          {"name":"born abroad of American parent(s)", "comp":"return v === 3" },
          {"name":"U.S. citizen by naturalization", "comp":"return v === 4" },
          {"name":"Not a U.S. citizen", "comp":"return v === 5" }
+      ],
+      "importance": 1000,
+      "expression": [
+      "persons.CIT == 1 ",
+      "persons.CIT == 2 ",
+      "persons.CIT == 3 ",
+      "persons.CIT == 4 ",
+      "persons.CIT == 5 "
       ]
    },
 
@@ -625,6 +766,35 @@
          {"name":" Doctorate degree", "comp":"return v === 24"},
          {"name":" N/A", "comp":"return v === 0"}        
 
+      ],
+      "importance": 1000,
+      "expression": [
+      "persons.SCHL == 1 ",
+      "persons.SCHL == 2 ",
+      "persons.SCHL == 3 ",
+      "persons.SCHL == 4 ",
+      "persons.SCHL == 5 ",
+      "persons.SCHL == 6 ",
+      "persons.SCHL == 7 ",
+      "persons.SCHL == 8 ",
+      "persons.SCHL == 9 ",
+      "persons.SCHL == 10 ",
+      "persons.SCHL == 11 ",
+      "persons.SCHL == 12 ",
+      "persons.SCHL == 13 ",
+      "persons.SCHL == 14 ",
+      "persons.SCHL == 15 ",
+      "persons.SCHL == 16 ",
+      "persons.SCHL == 17 ",
+      "persons.SCHL == 18 ",
+      "persons.SCHL == 19 ",
+      "persons.SCHL == 20 ",
+      "persons.SCHL == 21 ",
+      "persons.SCHL == 22 ",
+      "persons.SCHL == 23 ",
+      "persons.SCHL == 24 ",
+      "persons.SCHL == 0 "
+      
       ]
    
    },
@@ -693,6 +863,14 @@
          {"name":" 11 pm-11:59 pm", "comp":"return v > 273 && v <= 285" }, 
          {"name":" N/A", "comp":"return v === 0"}        
 
+      ]
+      ,
+      "importance": 1000,
+      "expression": [
+      "persons.JWAP <= 10 ",
+    
+      "persons.JWAP == 0 "
+      
       ]
    
    }

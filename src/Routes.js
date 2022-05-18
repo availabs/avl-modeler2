@@ -8,16 +8,11 @@ const Routes = [Home, ProjectCreate, Auth, NoMatch];
 
 export default Routes;
 
-// import Home from "pages/home"
+// import Home from "pages/Home";
 
-// import Auth from "pages/Auth"
-// import NoMatch from "pages/404"
+// import Auth from "pages/Auth";
+// import NoMatch from "pages/404";
 
-// const Routes = [
+// const Routes = [Home, Auth, NoMatch];
 
-//   Home,
-//   Auth,
-//   NoMatch
-// ]
-
-// export default Routes
+// export default Routes;

@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
-import Select from "react-select";
+import React, { useState, useEffect, useMemo } from "react";
+import Select, { components } from "react-select";
+import makeAnimated from "react-select/animated";
 
 const VarSelector = ({ layer, setSelectedVar }) => {
   const [variables, setVariables] = useState({});
-  // const [variables, setVariables] = useState({});
+  const [modelVars, setModelVars] = useState([]);
 
   useEffect(() => {
     const getVariables = async () => {
@@ -12,111 +13,71 @@ const VarSelector = ({ layer, setSelectedVar }) => {
       console.log("meta--", data);
 
       setVariables(data);
-
-      // handleChange(event) {
-      //     setVariables({name: event.target.value});
-      //   }
+      setModelVars(Object.keys(data).filter((key) => data[key].required));
     };
     getVariables();
   }, []);
 
-  console.log("variables---", variables);
+  console.log("variables---", variables, modelVars);
 
-  let variablesNew = Object.entries(variables).map((item) => {
-    return { value: item[0], label: item[1].name };
-    // console.log("keyvalue", key, value);
-  });
+  let options = useMemo(() => {
+    return Object.keys(variables)
+      .filter((k) => !modelVars.includes(k))
+      .map((k, i) => {
+        return {
+          value: k,
+          label: variables[k].name,
+        };
+      });
+  }, [modelVars]);
 
-  console.log("variablesNew--", variablesNew);
-
-  const colors = {
-    primary: "white",
-    light: "#aaa",
+  const addVar = (e) => {
+    console.log("event", e);
+    setModelVars([...modelVars, e.value]);
+    setSelectedVar([...modelVars, e.value].map((key) => variables[key]));
+    // setSelectedVar(selectedKeyArray.map((key) => variables[key]));
   };
 
-  const eventHandle = (e) => {
-    console.log(
-      "event",
-      e.map((x) => x.value)
+  const removeVar = (key) => {
+    if (variables[key].required) {
+      return;
+    }
+    setModelVars(modelVars.filter((k) => k !== key));
+    setSelectedVar(
+      modelVars.filter((k) => k !== key).map((key) => variables[key])
     );
-
-    let selectedKeyArray = e.map((x) => x.value);
-    // let selectedVariables = selectedKeyArray.map((key) => variables[key]);
-    // console.log("selectedVariables----", selectedVariables);
-
-    setSelectedVar(selectedKeyArray.map((key) => variables[key]));
-
-    // setSelectedVar(variables[e.map((x) => x.value)])
   };
 
   return (
-    <div>
+    <div className="mt-1 mb-2 ml-auto px-2 py-2">
       <Select
-        isMulti
-        isSearchable
-        options={variablesNew}
-        onChange={eventHandle}
-        placeholder="choose your variable(s)"
-        // style={{
-        //   backgroundColor: "white",
-        //   border: "1px solid #cccccc",
-        //   padding: "10px",
-        //   marginRight: "10px",
-        //   width: "90%",
-        //   fontSize: "1em",
-        //   color: "#3A3636",
-        // }}
-
-        // style={{
-        //   backgroundColor: "white",
-        //   border: "1px solid #cccccc",
-        //   padding: "10px",
-        //   marginRight: "50px",
-        //   width: "90%",
-        //   fontSize: "1em",
-        //   color: "#3A3636",
-        // }}
-      ></Select>
-      <label style={{ width: "60%" }}>
-        {/* <div
-          style={{
-            fontSize: "1.15em",
-            fontWeigh: 600,
-            color: colors.light,
-            borderBottom: `2px solid ${colors.light}`,
-            paddingBottom: 10,
-          }}
-        >
-          Choose a variable
-    
-        </div> */}
-        {/* 
-        <select
-          onChange={(e) => setSelectedVar(variables[e.target.value])}
-          style={{
-            backgroundColor: "white",
-            border: "1px solid #cccccc",
-            padding: "10px",
-            marginRight: "10px",
-            width: "90%",
-            fontSize: "1em",
-            color: "#3A3636",
-          }}
-          //   className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none"
-        >
-          <option key={0} value={""}>
-            choose a variable
-          </option>
-
-          {Object.keys(variables).map((k, i) => {
-            return (
-              <option key={i} value={k}>
-                {variables[k].name}
-              </option>
-            );
-          })}
-        </select> */}
-      </label>
+        // isMulti
+        // isSearchable
+        options={options}
+        value={""}
+        onChange={addVar}
+        placeholder="Select a variable or multiple variables"
+        components={makeAnimated()}
+      />
+      <div>
+        {modelVars.map((d) => {
+          return (
+            <div className="flex  border-b">
+              <div className="flex-1 p-1 ">{variables[d].name}</div>
+              <div
+                className={`${
+                  variables[d].required
+                    ? "cursor-not-allowed text-gray-300"
+                    : "cursor-pointer "
+                } p-2`}
+                onClick={() => removeVar(d)}
+              >
+                <i className="fa fa-times" />
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 };

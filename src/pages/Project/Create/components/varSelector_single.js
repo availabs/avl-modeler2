@@ -1,9 +1,6 @@
 import React, { useState, useEffect, useMemo, Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
 
-// import VarDisplay from "./VarDisplay";
-// import VarBarChart from "./VarBarChart";
-
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }

@@ -17,6 +17,7 @@ export default function CreateButton({ user }) {
           <Link
             type="button"
             to="/project/create"
+            // to="/"
             className="ml-3 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           >
             <span className="fa fa-plus pr-2" />
@@ -24,8 +25,8 @@ export default function CreateButton({ user }) {
           </Link>
         </div>
       </div>
-      {/* {open ? "true" : "false"} */}
-      {/* <CreateModal open={open} setOpen={setOpen} user={user} /> */}
+      {/* {open ? "true" : "false"}
+      <CreateModal open={open} setOpen={setOpen} user={user} /> */}
     </>
   );
 }
