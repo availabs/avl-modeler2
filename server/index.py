@@ -2,7 +2,8 @@ import sqlite3
 from flask import Flask, jsonify, render_template, request
 from flask_cors import CORS, cross_origin
 from markupsafe import re
-#from lib.activitysim.activitysim.core import pipeline
+from sim_settings.settings import models
+from lib.activitysim.activitysim.core import pipeline
 
 
 app = Flask(__name__)
@@ -99,8 +100,8 @@ def projectCreate_1():
     request_data = request.json
     print("POST data", request_data.keys())
     print("config", request_data['control_config'])
-    #models = ['input_pre_processor','setup_data_structures','initial_seed_balancing','meta_control_factoring','final_seed_balancing','integerize_final_seed_weights','sub_balancing.geography=TRACT','sub_balancing.geography=BG','expand_households','write_data_dictionary','summarize','write_tables','write_synthetic_population']
-    #pipeline.run(models)
+   
+    pipeline.run(models)
 
     # next step---
     # import makepop from 'lib/activitysim'

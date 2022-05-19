@@ -7,8 +7,8 @@ import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import controlConfigJson from "./controlConfig.json";
 import CreateNewProject from "./createProject_old";
-// import VarSelector from "./varSelector";
-import VarSelector from "./varSelector_1.js";
+import VarSelector from "./varSelector";
+// import VarSelector from "./varSelector_1.js";
 import CreateProject from "./createProject";
 
 import { stringify } from "postcss";
@@ -65,7 +65,7 @@ const DataGenerator = ({ layer }) => {
       control_config: controlConfig,
     };
     console.log("finalData---", finalData);
-    // requestCreate(finalData);
+    requestCreate(finalData);
 
     setProcess(false);
     // return finalData;
@@ -364,8 +364,8 @@ const DataGenerator = ({ layer }) => {
                   binned_var_name: binnedACSName,
                   binned_var_value: binnedACSValue,
                   // binned_var_value_test: binnedACSValueTest,
-                  HHBase_Tracts: ACSOutput[0]["S2501_C01_001E"],
-                  PopBase_Tracts: ACSOutput[0]["S0101_C01_001E"],
+                  HHBase_Tracts: ACSOutput[0]["B25001_001E"],
+                  PopBase_Tracts: ACSOutput[0]["B01003_001E"],
                 };
               });
 

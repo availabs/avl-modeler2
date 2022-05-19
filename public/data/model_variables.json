@@ -40,12 +40,12 @@
       "var": "HHBASE",
       "acs_type":"Tract",
       "acs_vars":{
-        "":["S2501_C01_001E"]
+        "":["B25001_001E"]
       },
      "binsCompare":[
         {"name":"", "comp": "return v"}
      ],
-     "required":false,
+     "required":true,
      "importance": 100000,
      "expression": ["(households.WGTP > 0) & (households.WGTP < np.inf)"]
    },
@@ -58,12 +58,12 @@
       "var": "POPBASE",
       "acs_type":"Tract",
       "acs_vars":{
-        "":["S0101_C01_001E"]
+        "":["B01003_001E"]
       },
      "binsCompare":[
         {"name":"", "comp": "return v"}
      ],
-     "required":false,
+     "required":true,
      "importance": 100000,
      "expression": ["(households.WGTP > 0) & (households.WGTP < np.inf)"]
    },
@@ -179,22 +179,7 @@
          "2013":["B25034_003E"],
          "2014+":["B25034_002E"]
          },
-   
-    
-      "bins":
-      [
-         {"name":"<= 1939", "value":1 },   
-         {"name":"<= 1949", "value":2 },       
-         {"name":"<= 1959", "value":3 },    
-         {"name":"<= 1969", "value":4 },    
-         {"name":"<= 1979", "value":5 },    
-         {"name":"<= 1989", "value":6 },    
-         {"name":"<= 1999", "value":7 },    
-         {"name":"<= 2009", "value":13 },   
-         {"name":"<= 2013", "value":17 },    
-         {"name":"<= 2019", "value":23}    
 
-      ],
       "binsCompare":[
          {"name":"<= 1939", "comp":"return v === 1" },   
          {"name":"<= 1949", "comp":"return v === 2" },       
@@ -323,18 +308,7 @@
          "value":["B25117_003E","B25117_004E", "B25117_013E", "B25117_014E" ]
          
          },
-   
-      "bins":
-      [
-         {"name":"<= 50", "value":50 },   
-         {"name":"<= 100", "value":100 },       
-         {"name":"<= 200", "value":200 },    
-         {"name":"<= 300", "value":300 },    
-         {"name":"<= 500", "value":500 },    
-         {"name":"> 500", "value":999 } 
-            
 
-      ],
    
       "binsCompare":
       [
@@ -369,13 +343,6 @@
          
          },
       
-      "bins":
-      [
-         {"name":"Male", "value":1 },   
-         {"name":"Female", "value":2 }
-            
-
-      ],
       
       "binsCompare":
       [
@@ -438,8 +405,8 @@
               "B01001_027E","B01001_028E"],
          "19":["B01001_005E","B01001_006E","B01001_007E",
               "B01001_029E","B01001_030E","B01001_031E"],
-         "29":["B01001_008E","B01001_009E","B01001_0010E","B01001_011E",
-              "B01001_032E","B01001_033E","B01001_0034E","B01001_035E"],
+         "29":["B01001_008E","B01001_009E","B01001_010E","B01001_011E",
+              "B01001_032E","B01001_033E","B01001_034E","B01001_035E"],
          "39":["B01001_012E","B01001_013E",
               "B01001_036E","B01001_037E"],
          "49":["B01001_014E","B01001_015E",
@@ -491,12 +458,7 @@
       "0": ["B99082_004E"],
       "1" : ["B99082_003E"]
          },
-   
-      "bins":[
-         {"name":"N/A(not a worker or public transportaion)", "value":"bb" },   
-         {"name":"Drive alone", "value":1 },
-         {"name":"Allocated(Car-pool)", "value":10 }
-      ],
+
    
       "binsCompare":[
          {"name":" N/A ( not a worker or public transportaion", "comp":"return v === 0" },   
@@ -529,19 +491,6 @@
       "N/A" : [""]
          },
    
-      "bins":[
-     
-         {"name":"Private for-profit wage and salary workers", "value":1 },
-         {"name":"Private not-for-profit wage and salary workers", "value":2 },
-         {"name":"Local government workers", "value":3 },
-         {"name":"State government workers", "value":4 },
-         {"name":"Federal government workers", "value":5 },
-         {"name":"Self-employed in own not incorporated business workers", "value":6 },
-         {"name":"Self-employed in own incorporated business workers", "value":7 },
-         {"name":"Unpaid family workers", "value":8 },
-         {"name":"N/A (not in universe)", "value":"b" }
-      
-      ],
    
       "binsCompare":[
      
@@ -633,8 +582,7 @@
       "8":["B08006_016E"],
       "9":["B08006_014E"],
       "10":["B08006_015E"],
-      "11":["B08006_017E"],
-      "N/A" : [""]
+      "11":["B08006_017E"]
          },
    
    
@@ -649,8 +597,7 @@
          {"name":"Taxicab, motorcycle, or other means", "comp":"return v === 8" },
          {"name":"Bicycle", "comp":"return v === 9" },
          {"name":"Walked", "comp":"return v === 10" },
-         {"name":"Worked from home", "comp":"return v === 11"},
-         {"name":"N/A (not in universe)", "comp":"return v === 0" }
+         {"name":"Worked from home", "comp":"return v === 11"}
       
       ],
       "importance": 1000,
@@ -794,82 +741,6 @@
       "persons.SCHL == 23 ",
       "persons.SCHL == 24 ",
       "persons.SCHL == 0 "
-      
-      ]
-   
-   },
-   "JWAP":{
-      "name":"Time of arrival at Work",
-      "synpop_type":"persons",
-      "comment": "qa check NOT passed--there are  TIME ARRIVING AT WORK FROM HOME FOR WORKPLACE GEOGRAPHY but null in bg and tract",
-      "var": "JWAP",
-      "acs_type":"",
-      "acs_vars":{ 
-         "1":["B08602_002E"], 
-         "2":[""],
-         "3":[""],
-         "4":[""],
-         "5":[""],
-         "6":[""],
-         "7":[""],
-         "8":[""],
-         "9":[""],
-         "10":[""],
-         "11":[""],
-         "12":[""],
-         "13":[""],
-         "14":[""],
-         "15":[""],
-         "16":[""],
-         "17":[""],
-         "18":[""],
-         "19":[""],
-         "20":[""],
-         "21":[""],
-         "22":[""],
-         "23":[""],
-         "24":[""],
-         "25":[""],
-         "N/A" : [""]
-         },
-   
-
-   
-      "binsCompare":
-      [
-         {"name":" 12 am -12:59 am", "comp":"return v <= 10" },   
-         {"name":" 1 am -1:59 am", "comp":"return v > 10 && v <= 21" },       
-         {"name":" 2 am -2:59 am", "comp":"return v > 21 && v <= 33" },    
-         {"name":" 3 am -3:59 am", "comp":"return v > 33 && v <= 45" },   
-         {"name":" 4 am -4:59 am", "comp":"return v > 45 && v <= 57" }, 
-         {"name":" 5 am -5:59 am", "comp":"return v > 57 && v <= 69" },
-         {"name":" 6 am -6:59 am", "comp":"return v > 69 && v <= 81" },
-         {"name":" 7 am -7:59 am", "comp":"return v > 81 && v <= 93" },   
-         {"name":" 8 am -8:59 am", "comp":"return v > 93 && v <= 105" }, 
-         {"name":" 9 am -9:59 am", "comp":"return v > 105 && v <= 117" },
-         {"name":" 10 am -10:59 am", "comp":"return v > 117 && v <= 129" },
-         {"name":" 11 am -11:59 am", "comp":"return v > 129 && v <= 141" },   
-         {"name":" 12 pm-12:59 am", "comp":"return v > 141 && v <= 153" },   
-         {"name":" 1 pm-1:59 pm", "comp":"return v > 153 && v <= 165" },       
-         {"name":" 2 pm-2:59 pm", "comp":"return v > 165 && v <= 177" },    
-         {"name":" 3 pm-3:59 pm", "comp":"return v > 177 && v <= 189" },   
-         {"name":" 4 pm-4:59 pm", "comp":"return v > 189 && v <= 201" }, 
-         {"name":" 5 pm-5:59 pm", "comp":"return v > 201 && v <= 213" },
-         {"name":" 6 pm-6:59 pm", "comp":"return v > 213 && v <= 225" },
-         {"name":" 7 pm-7:59 pm", "comp":"return v > 225 && v <= 237" },   
-         {"name":" 8 pm-8:59 pm", "comp":"return v > 237 && v <= 249" }, 
-         {"name":" 9 pm-9:59 pm", "comp":"return v > 249 && v <= 261" },
-         {"name":" 10 pm-10:59 pm", "comp":"return v > 261 && v <= 273" },
-         {"name":" 11 pm-11:59 pm", "comp":"return v > 273 && v <= 285" }, 
-         {"name":" N/A", "comp":"return v === 0"}        
-
-      ]
-      ,
-      "importance": 1000,
-      "expression": [
-      "persons.JWAP <= 10 ",
-    
-      "persons.JWAP == 0 "
       
       ]
    

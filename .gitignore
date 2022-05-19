@@ -20,6 +20,7 @@ src/config.json
 *.sqlite
 *.zip
 *.csv
+test/*.json
 
 # misc
 .DS_Store
